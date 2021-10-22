@@ -1,6 +1,6 @@
 # 概述
 
-在解决一个关于Fragment 的bug中，将Frameng相关的知识点过了一遍。FragmentManger其复杂度比想象的更为复杂。
+在解决一个关于Fragment 的bug中，将Frameng相关的知识点过了一遍。FragmentManger其复杂度比想象的更为复杂。后面慢慢的整理下
 
 
 核心类 
