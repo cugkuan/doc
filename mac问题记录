@@ -1,0 +1,7 @@
+# “zsh: command not found: adb” 的解决方法：
+
+终端分别输入
+echo 'export ANDROID_HOME=/Users/$USER/Library/Android/sdk' >> ~/.zshrc
+echo 'export ANDROID_HOME=/Users/$USER/Library/Android/sdk' >> ~/.zshrc
+然后
+source ~/.zshrc
