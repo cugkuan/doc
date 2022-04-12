@@ -275,3 +275,61 @@ TbsReadView  相关回调必须再构造函数中传入，这决定了 这个对
 使用腾讯的tbs 服务，总的来说，确实可以加快渲染速度，但是有着自身无法克服的困难，特别是文档不完整和其他一些奇怪的问题，诸如，再内核切换过程中，可能导致 cookie 丢失等情况。
 
 上面的是针对项目中的问题，给出一种解决方案。
+
+
+
+# Tbs典型的一些bug 
+
+
+**场景**
+
+用户反馈，在h5界面浏览的时候，卡住了，然后退出页面，然后突然崩溃了，然后再也打不开了。
+
+下面是主要的崩溃日志：
+
+```
+46:17.428  1000  2871  3152 I HwNetworkPolicyManager: getHwUidPolicy uid = 10165 policy = 0
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: Unable to instantiate appComponentFactory
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: java.lang.ClassNotFoundException: Didn't find class "androidx.core.app.CoreComponentFactory" on path: DexPathList[[zip file "/data/app/com.example.android_ksbao_stsq-la3b4RBgQg2m3-_KCI3POQ==/base.apk"],nativeLibraryDirectories=[/data/app/com.example.android_ksbao_stsq-la3b4RBgQg2m3-_KCI3POQ==/lib/arm64, /data/app/com.example.android_ksbao_stsq-la3b4RBgQg2m3-_KCI3POQ==/base.apk!/lib/arm64-v8a, /system/lib64, /hw_product/lib64, /system/product/lib64]]
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:209)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:379)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:312)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.LoadedApk.createAppFactory(LoadedApk.java:270)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.LoadedApk.createOrUpdateClassLoaderLocked(LoadedApk.java:1005)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.LoadedApk.getClassLoader(LoadedApk.java:1129)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.LoadedApk.getResources(LoadedApk.java:1419)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.ContextImpl.createAppContext(ContextImpl.java:2662)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.ContextImpl.createAppContext(ContextImpl.java:2644)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:7452)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.ActivityThread.access$2600(ActivityThread.java:260)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2435)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.os.Handler.dispatchMessage(Handler.java:110)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.os.Looper.loop(Looper.java:219)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at android.app.ActivityThread.main(ActivityThread.java:8668)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at java.lang.reflect.Method.invoke(Native Method)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:513)
+03-12 15:46:17.439 10165 28445 28445 E LoadedApk: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1109)
+03-12 15:46:17.448  1000  1606  2327 I chatty  : uid=1000(system) InputDispatcher expire 2 lines
+03-12 15:46:17.490  1000 28602 28979 E BoosterNty: onOemHookRawEvent decodes failed.
+03-12 15:46:17.516 10165 30670 30670 F linker  : error: unable to open file "/data/local"
+03-12 15:46:17.521 10165 30671 30671 F linker  : error: unable to open file "/data/local"
+03-12 15:46:17.527 10165 30672 30672 F linker  : error: unable to open file "/data/local"
+03-12 15:46:17.531 10165 30674 30674 F linker  : error: unable to open file "/data/local"
+03-12 15:46:17.536 10473 27315 27315 W HwApsManager: HwApsManagerService, registerCallback, start !
+03-12 15:46:17.538 10165 30675 30675 F linker  : error: unable to open file "/data/local"
+
+.....
+03-12 15:46:25.432 10473 27315 27315 W FileUtils: Failed to chmod(/data/user/0/com.tencent.mm/app_tbs_64): android.system.ErrnoException: chmod failed: EACCES (Permission denied)
+03-12 15:46:25.434 10473 27315 27315 W FileUtils: Failed to chmod(/data/user/0/com.tencent.mm/app_tbs_64): android.system.ErrnoException: chmod failed: EACCES (Permission denied)
+```
+
+刚开始的时候，盯着 java.lang.ClassNotFoundException: Didn't find class "androidx.core.app.CoreComponentFactory" 这个奔溃，但实际上主要的问题时下面这个
+
+```
+03-12 15:46:25.432 10473 27315 27315 W FileUtils: Failed to chmod(/data/user/0/com.tencent.mm/app_tbs_64): android.system.ErrnoException: chmod failed: EACCES (Permission denied)
+03-12 15:46:25.434 10473 27315 27315 W FileUtils: Failed to chmod(/data/user/0/com.tencent.mm/app_tbs_64): android.system.ErrnoException: chmod failed: EACCES (Permission denied)
+```
+
+就是tbs崩溃之前锁定了对应的文件，然后就崩溃了，重新打开时不行了
+
+
