@@ -157,6 +157,23 @@ class RecyclerViewAtViewPager2 : RecyclerView {
 基本上满足了要求。
 
 
+当上面的处理方式，这是解决了部分问题，灵敏度还是有点高，Viewpager2 内部是 RecyclerView 实现的于是代码如下:
+
+```
+   viewPager = rootView.findViewById(R.id.viewPager)
+   viewPager.let { viewPager2 ->
+            try {
+                val recyclerViewField: Field = ViewPager2::class.java.getDeclaredField("mRecyclerView")
+                recyclerViewField.isAccessible = true
+                val recyclerView = recyclerViewField.get(viewPager2) as RecyclerView
+                val touchSlopField: Field = RecyclerView::class.java.getDeclaredField("mTouchSlop")
+                touchSlopField.isAccessible = true
+                val touchSlop = touchSlopField.get(recyclerView) as Int
+                touchSlopField.set(recyclerView, touchSlop * 3) //6 is empirical value
+            } catch (e: java.lang.Exception) { }
+         }
+```
+这样处理后，灵敏度降下去了，是使用体验跟 ViewPager 差不多。
 # 后续
 
 对于嵌套的滑动事件冲突，记住在在合适的时间 使用 父ViewGroup 的 requestDisallowInterceptTouchEvent
