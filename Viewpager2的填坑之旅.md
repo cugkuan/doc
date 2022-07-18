@@ -178,3 +178,5 @@ class RecyclerViewAtViewPager2 : RecyclerView {
 
 对于嵌套的滑动事件冲突，记住在在合适的时间 使用 父ViewGroup 的 requestDisallowInterceptTouchEvent
  
+
+ # Activity 重建过程中 ，Fragment的陷阱
