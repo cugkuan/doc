@@ -180,3 +180,45 @@ class RecyclerViewAtViewPager2 : RecyclerView {
  
 
  # Activity 重建过程中 ，Fragment的陷阱
+
+
+在Activity作为主Activity中，使用了一个 SplashFragment 用户观察启动过程，当整个启动过程结束（相应的sdk初始化完成，数据库，磁盘自检完成），通知 activity 刷新界面。这样设计，是为了启动过程和Activity创建同步进行，节省时间。
+
+正常启动一切OK，但是到 Activity被销毁重建时（开发者模式中，设置不保留活动），崩溃了。原因是 启动流程已经完成，splashFragment 立即通知 Acticity，但此时,Activity的View 都还没初始化。
+
+请注意。Activity 重建时，之前的Fragment 就已经存在。
+
+然后使用了下面的代码进行补救：
+
+在Activity 的 OnCreate 调用前
+
+```
+  // 当Activity 重建时处理，否则会引发崩溃
+        Fragment f = getSupportFragmentManager().findFragmentByTag(SplashFragment.TAG);
+        if (f != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(f)
+                    .commitNowAllowingStateLoss();
+        }
+```
+
+更改后，这样的崩溃记录在 bugly 上降低了 很多，但还有零星的 崩溃记录
+
+这就把我整不会了。难道是其它的原因，但是分析了很久的代码，最终的结论，还是跟 splashFragment相关，猜测, Activity 中不止一个 SplashFragment ,于是代码代码改成这样：
+
+```
+    // 当Activity 重建时处理，否则会引发崩溃,这尼玛真奇怪
+        for (; ; ) {
+            Fragment f = getSupportFragmentManager().findFragmentByTag(SplashFragment.TAG);
+            if (f != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .remove(f)
+                        .commitNowAllowingStateLoss();
+            } else {
+                break;
+            }
+        }
+
+```
+这样改后，再观察下情况，至于为什么会有 多个 Fragment 在 Activity 中，真不清楚，推测可能是异形屏幕等情况？
+
