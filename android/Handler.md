@@ -1,83 +1,6 @@
 Handler 原理很多公司都会问，关于Handler 的原理，用下面的代码就可以看清楚Handler 是如何工作的。
 
-下面是Handler 的一个简化版本：
 
-```java
-public class Handler {
-    private Looper looper;
-    public Handler(){
-        looper =  Looper.looperThreadLocal.get();
-    }
-    void sendMsg(Message message) throws InterruptedException {
-        message.target = this;
-        looper.q.put(message);
-    }
-    public void handMsg(Message msg){
-        System.out.println(Thread.currentThread().getName());
-    }
-}
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-
-public class Looper {
-    static ThreadLocal<Looper> looperThreadLocal = new ThreadLocal<>();
-    BlockingQueue<Message> q = new LinkedBlockingDeque<>();
-    public Looper() {
-        looperThreadLocal.set(this);
-    }
-    public void prepare() {
-        while (true) {
-            try {
-                Message message = q.take();
-                message.target.handMsg(message);
-            } catch (InterruptedException e) {
-            }
-        }
-    }
-}
-
-public class Message {
-    public Handler target;
-    public String msg;
-    public Message(String msg){
-        this.msg = msg;
-    }
-}
-```
-测试代码：
-```java
-public class Ttest {
-    public static void main(String[] args)  {
-        Looper looper = new Looper();
-        Handler handler = new Handler(){
-            @Override
-            public void handMsg(Message msg) {
-                super.handMsg(msg);
-                System.out.println(msg.msg + Thread.currentThread().getName());
-            }
-        };
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(1*1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(Thread.currentThread().getName());
-                Message msg = new Message("xxxxxx");
-                try {
-                    handler.sendMsg(msg);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }).start();
-        looper.prepare();
-    }
-
-```
 
 # Handler 简单分析
 
@@ -198,4 +121,97 @@ View的绘制等。
 
 IdleHanler 执行的具体时间不定。
 
+# 关于Message 的设计
 
+
+应用中的任何交互，包括点击事件，手势滑动，更新UI等，都是通过 Message ，Handler机制去更新，那岂不是需要创建无数个Meassge?
+
+Android 的设计者们早就考虑到了这个问题，如果你通过
+
+> Message.obtain()
+
+获取的消息可能来自缓存池的消息。
+
+当一个消息被分发完毕后，会调用消息的 recycleUnchecked 方法进行消息的清理；该方法会被标识为 FLAG_IN_USE，如果 消息的缓存池中小于 50个，此消息会进行缓存池，而不会被回收，等待下次被复用。
+
+
+
+
+# 下面是Handler 的一个简化版本：
+
+```java
+public class Handler {
+    private Looper looper;
+    public Handler(){
+        looper =  Looper.looperThreadLocal.get();
+    }
+    void sendMsg(Message message) throws InterruptedException {
+        message.target = this;
+        looper.q.put(message);
+    }
+    public void handMsg(Message msg){
+        System.out.println(Thread.currentThread().getName());
+    }
+}
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+
+public class Looper {
+    static ThreadLocal<Looper> looperThreadLocal = new ThreadLocal<>();
+    BlockingQueue<Message> q = new LinkedBlockingDeque<>();
+    public Looper() {
+        looperThreadLocal.set(this);
+    }
+    public void prepare() {
+        while (true) {
+            try {
+                Message message = q.take();
+                message.target.handMsg(message);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+}
+
+public class Message {
+    public Handler target;
+    public String msg;
+    public Message(String msg){
+        this.msg = msg;
+    }
+}
+```
+测试代码：
+```java
+public class Ttest {
+    public static void main(String[] args)  {
+        Looper looper = new Looper();
+        Handler handler = new Handler(){
+            @Override
+            public void handMsg(Message msg) {
+                super.handMsg(msg);
+                System.out.println(msg.msg + Thread.currentThread().getName());
+            }
+        };
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(1*1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName());
+                Message msg = new Message("xxxxxx");
+                try {
+                    handler.sendMsg(msg);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).start();
+        looper.prepare();
+    }
+
+```
