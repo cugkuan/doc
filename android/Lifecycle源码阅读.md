@@ -28,6 +28,7 @@ Lifecycle 和  LifecycleObserver
 >通过注解的方式，官方已经标识为过时。
 
 
+下面是一个简单的类图，似乎有点像桥接设计模式
 
 
 ```mermaid
