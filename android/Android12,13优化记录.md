@@ -40,3 +40,43 @@ ANR Broadcast of Intent { act=com.tencent.android.xg.vip.action.FEEDBACK flg=0x1
 ```
 
 目前仍然没有定位到问题所在
+
+
+- 腾讯x5内核问题
+
+> 升级之后，部分用户，点击输H5的输入框之后，APP崩溃，日志如下：
+
+```java 
+org.chromium.content.browser.input.l.a(TbsJavaCore:27)
+org.chromium.content.browser.input.a0.a(TbsJavaCore:7)
+org.chromium.content.browser.input.a0.a(TbsJavaCore:3)
+org.chromium.content.browser.input.ImeAdapterImpl.a(TbsJavaCore:14)
+org.chromium.content.browser.input.ImeAdapterImpl.a(TbsJavaCore:6)
+org.chromium.android_webview.AwContents$l.a(TbsJavaCore:53)
+org.chromium.tencent.TencentAwContent$e.a(TbsJavaCore:2)
+org.chromium.android_webview.AwContents.a(TbsJavaCore:155)
+android.webview.chromium.g1.a(TbsJavaCore:197)
+com.tencent.tbs.core.webkit.WebView.onCreateInputConnection(TbsJavaCore:1)
+com.tencent.tbs.core.webkit.tencent.TencentWebViewProxy$InnerWebView.onCreateInputConnection(TbsJavaCore:1)
+android.view.inputmethod.InputMethodManager.startInputInner(InputMethodManager.java:2001)
+android.view.inputmethod.InputMethodManager.restartInput(InputMethodManager.java:1931)
+org.chromium.content.browser.input.m.b(TbsJavaCore:3)
+org.chromium.content.browser.input.ImeAdapterImpl.q(TbsJavaCore:2)
+org.chromium.tencent.content.browser.input.a.q(TbsJavaCore:3)
+org.chromium.content.browser.input.ImeAdapterImpl.updateState(TbsJavaCore:29)
+org.chromium.tencent.content.browser.input.a.updateState(TbsJavaCore:1)
+android.os.MessageQueue.nativePollOnce(Native Method)
+```
+
+原因是，InputMethodManager 在Android 12 之后发生变动，这个问题很难处理，依赖于腾讯的 tbs 内核更新。部分腾讯tbs内核问题
+
+
+**如何缓解？**
+
+目前，从tbs的提供的文档来看，缓解的方法就是：
+
+设置内核的最小值
+
+```
+    QbSdk.setCoreMinVersion(46141)
+```
