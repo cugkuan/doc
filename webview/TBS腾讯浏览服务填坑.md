@@ -360,6 +360,6 @@ TbsReadView  相关回调必须再构造函数中传入，这决定了 这个对
 
 如果文件没有文件类型后缀，竟然没法预览，我草
 
-# TBS 的静态集成
+# TBS 的静态集成方案
 
 https://www.jianshu.com/p/b0c79786fbe6
