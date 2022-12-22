@@ -12,7 +12,7 @@ https://greenrobot.org/eventbus/documentation/delivery-threads-threadmode/
 
 EventBus 的工作原理很简单，核心代码也没有几行
 
-##  注册（EventBus.register）
+## 注册（EventBus.register）
 
 ```java
 public void register(Object subscriber) {
@@ -52,5 +52,3 @@ Map<Class<?>, CopyOnWriteArrayList<Subscription>> subscriptionsByEventType;
 - AsyncPoster
 - BackgroundPoster
 - HandlerPoster 对应 MAIN_ORDERED 
-
-
