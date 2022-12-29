@@ -16,6 +16,11 @@ ViewRootImp 管理着 DecorView
  * detail of {@link WindowManagerGlobal}.
 
 
+# 关于ViewRootImp
+
+
+
+
 
 ## Window，WindowManger,WindowMangerGlobal
 
