@@ -36,7 +36,8 @@
 
 ## 前期准备
 
-我们的桌面，是一个APP，LauncherApp,设置 也是一个APP，包括
+我们的桌面，是一个APP，LauncherApp；
+
 
 
 
