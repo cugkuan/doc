@@ -1,90 +1,52 @@
 # 概述
 
-在解决一个关于Fragment 的bug中，将Frameng相关的知识点过了一遍。FragmentManger其复杂度比想象的更为复杂。后面慢慢的整理下
+Frgament 本身很简单，复杂的是 FragmentTransaction 涉及到的一系列的操作。
+
+事务的概念，这里就不说了。
 
 
-核心类 
-
--  FragmentTransaction  和  BackStackRecord
--  FragmentManager
--  FragmentController
--  FragmentActivity
-
-## FragmentManger
-
-明确事务的概念
+那么为什么有 FragmentTransaction 的概念：一个场景就是 我们需要移除一个 FragmentA然后 添加 FragmentB,这整个过程是不能中断的。
 
 
-在数据库操作中，事务无处不在，简单的理解，就是事务是一系列的操作集合，这个操作集合，要么成功，要么失败。
-
-FragmentTransaction 中 有一个静态内部类 Op  这个就是操作类
 
 
-```java 
-static final class Op {
-        int mCmd;
-        Fragment mFragment;
-        int mEnterAnim;
-        int mExitAnim;
-        int mPopEnterAnim;
-        int mPopExitAnim;
-        Lifecycle.State mOldMaxState;
-        Lifecycle.State mCurrentMaxState;
+几个关键的类
 
-        Op() {
-        }
+- FragmentTransaction
 
-        Op(int cmd, Fragment fragment) {
-            this.mCmd = cmd;
-            this.mFragment = fragment;
-            this.mOldMaxState = Lifecycle.State.RESUMED;
-            this.mCurrentMaxState = Lifecycle.State.RESUMED;
-        }
+只是作为一个行为记录。一次操作，被抽象为一个
 
-        Op(int cmd, @NonNull Fragment fragment, Lifecycle.State state) {
-            this.mCmd = cmd;
-            this.mFragment = fragment;
-            this.mOldMaxState = fragment.mMaxState;
-            this.mCurrentMaxState = state;
-        }
-    }
+- BackStackRecord  
+
+FragmentTransaction 的唯一子类，实现了 commit 的相关逻辑
+
+- FragmentManager
+
+很多的逻辑都是通过 FragmentManger 进行转接的。我们也是通过FramentManger 去控制Fragment，
+
+- FragmentStateManager 
+
+Frgament 对应状态的具体处理类，这里面的代码值得阅读，明白一个Fragment 的创建过程，销毁过程。
+
+
+
+简单的说，我们管理Fragment是通过FrgmentManger 进行的；
+
+
+## 类图
+
+``` mermaid
+classDiagram
+
+
+
+
+class FragmentManager
+
+class FragmentTransaction
+
+class BackStackRecord
+
+class FragmentStateManager
+
 ```
-
-下面是我们添加一个 Fragment 的常见操作
-
-```java 
-getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(new ScreenShotFragment(), "shot")
-                    .commitAllowingStateLoss();
-```
-而
-```
- .add(new ScreenShotFragment(), "shot")
- ```
- 最终就是 新建 一个 OP 放到 一个列表中
-
- ```
-   addOp(new Op(opcmd, fragment));
- ```
-
-
-FragmentTransaction  的作用就是这个。
-
-
-接下来就是事务的执行过程。事务的执行 由FragmentManger 进行的，其核心的方法就是
-
-moveToState（大概在 1117行）
-
-根据 Fragment 所处的生命周期和 FragmentManger 当前的生命周期，去执行 Frgment相应的周期代码。
-
-请注意，Fragment 的状态变化，也就是生命周期的变化，是通过 FragmentStateManager 去管理 Fragment 的状态变化，事实上，Fragment 成了一个 纯粹的 bean，行为都是由 FragmentManger 去控制。Android 将操作Fragment 的行为都封装起来了。
-
-当然，前面会对 Op 做一些操作，如去掉冗余、
-
-
-
-**Fragment中有一个Target fragment 这个 Fragment 的作用是什么** 
-
-# 代码理解
-
