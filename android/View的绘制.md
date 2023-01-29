@@ -1,5 +1,7 @@
 
+每一个Window都关联了一个 surface
 # 涉及到的关键类
+
 
 ## ViewRootImp ,DecorView(com.android.internal.policy)
 
