@@ -78,6 +78,8 @@ if(!isIntercept){
 
 ViewGroup 中 有个 mFirstTouchTarget 指向上一个接受事件处理的View
 
+> 对于ViewGroup，如果事件是 ACTION_DOWN 的时候，会重置状态
+
 ##  ViewGroup 中，子View 能够处理事件的要求
 
  1. View 是 visible 的
@@ -90,3 +92,7 @@ ViewGroup 中 有个 mFirstTouchTarget 指向上一个接受事件处理的View
 ## 子View 干涉 ViewGroup的事件分发
 
 requestDisallowInterceptTouchEvent
+
+
+请注意，这里的干涉，并不会改变 mFirstTouchTarget ,只是让 parentView 进行事件的拦截处理。
+
