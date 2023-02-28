@@ -96,3 +96,40 @@ requestDisallowInterceptTouchEvent
 
 请注意，这里的干涉，并不会改变 mFirstTouchTarget ,只是让 parentView 进行事件的拦截处理。
 
+
+下面是一个典型的处理滑动冲突的代码
+
+```java
+ // 以下代码处理滑动冲突问题
+    private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+    private var initialX = 0f
+    private var initialY = 0f
+    override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
+        handleInterceptTouchEvent(e)
+        return super.onInterceptTouchEvent(e)
+    }
+
+    private fun handleInterceptTouchEvent(e: MotionEvent) {
+        when (e.action) {
+            MotionEvent.ACTION_DOWN -> {
+                initialX = e.x
+                initialY = e.y
+                parent.requestDisallowInterceptTouchEvent(true)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val dx = e.x - initialX
+                val dy = e.y - initialY
+                val scaledDx = dx.absoluteValue * .5f
+                val scaledDy = dy.absoluteValue * 1f
+                if (scaledDx > touchSlop || scaledDy > touchSlop) {
+                    if (scaledDy > scaledDx) {
+                        parent.requestDisallowInterceptTouchEvent(false)
+                    } else {
+                        parent.requestDisallowInterceptTouchEvent(true)
+                    }
+                }
+            }
+        }
+    }
+```
+

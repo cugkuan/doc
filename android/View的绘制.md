@@ -1,5 +1,9 @@
 
-每一个Window都关联了一个 surface
+每一个Window都关联了一个 surface,View 的渲染，实际上 就是一个 Canvas 的渲染。
+
+-  既然就是一个画布，那我们自定义View的时候，为什么绘制的内容起始点不是屏幕的原点？
+  > View的 boolean draw(Canvas canvas, ViewGroup parent, long drawingTime) 已经帮你把Canvas移动到一个最佳的位置，调用这个函数的是 ViewGroup 的 drawChild()方法。
+  
 # 涉及到的关键类
 
 
