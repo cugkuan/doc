@@ -90,3 +90,7 @@ includeFontPadding = true  进行规避
         
         }
 ```
+
+# 问题2 
+
+TextView 的 includeFontPadding 如果是单行能正常的运作，但是，如果 是多行，其顶部 会多出 间距，暂时无解。
