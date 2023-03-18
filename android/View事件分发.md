@@ -62,7 +62,7 @@ if(!isIntercept){
 
 
 对于ViewGroup ，情况比较复杂点。
- -   dispatchTouchEvent 负责分发事件，首页 会调用 onInterceptTouch 询问是否拦截事件，只有 返回true 表示拦截处理。拦截处理后，交给自己的onTouchEvent处理。否则进行分发。
+ -   dispatchTouchEvent 负责分发事件，首先会调用 onInterceptTouch 询问是否拦截事件，只有 返回true 表示拦截处理。拦截处理后，交给自己的onTouchEvent处理。否则进行分发。
  -  如果该 Event 不是 ACTION_DOWN ，有 mFirstTouchTarget ，直接分发给 mFirstTouchTarget，否则走正常的流程
  -  dispatchTouchEvent 根据 childView 的层次，进行分发，找符合条件的childView（动画结束，visible,Event 落在View的范围）；只有 childView 的 dispatchTouchEvent 返回 true ，表示分发结束； 如果所有的 子View 都没有处理，那么，就是自己的 onTouchEvent 处理，自己的也不处理，就抛给上层的View了。
 
@@ -73,12 +73,14 @@ if(!isIntercept){
 我们经常听到这样的一句话:
 > 只有当View 响应了 ACTION_DOWN 之后，才会收到接下来的事件。这个怎么理解。
 
-如果 Event 不是 Action_Down 类型，那么上一个接受 Event 的View接着处理；当Event 是 ACTION_DOWN 时。进行状态标志的复位，重新走一遍流程。
+如果 Event 不是 Action_Down 类型，那么上一个接受 Event 的View(哪怕这个手势如move事件已经离开了这个View范围)仍然是这个View接着处理；当Event 是 ACTION_DOWN 时。进行状态标志的复位，重新走一遍流程。
 
 
 ViewGroup 中 有个 mFirstTouchTarget 指向上一个接受事件处理的View
 
 > 对于ViewGroup，如果事件是 ACTION_DOWN 的时候，会重置状态
+
+当没有找到任何childView 响应actionDown的时候，自己的 onTouchEvent进行处理
 
 ##  ViewGroup 中，子View 能够处理事件的要求
 
