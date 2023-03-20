@@ -92,20 +92,36 @@ performMeasure() --> performLayout() --> performDraw()
 
 <p style = "color:red; text-decoration:underline"><bold>DecorView的ParentView 是 ViewRootImp</blold></p>
 
-所以，最终 DecorView 调用 ViewRootImp 的 requerstLayout
+所以，最终 DecorView 调用 ViewRootImp 的 requestLayoutDuringLayout
 
 ```
-    @Override
-    public void requestLayout() {
+    boolean requestLayoutDuringLayout(final View view) {
+        if (view.mParent == null || view.mAttachInfo == null) {
+            // Would not normally trigger another layout, so just let it pass through as usual
+            return true;
+        }
+        if (!mLayoutRequesters.contains(view)) {
+            mLayoutRequesters.add(view);
+        }
         if (!mHandlingLayoutInLayoutRequest) {
-            checkThread();
-            mLayoutRequested = true;
-            scheduleTraversals();
+            // Let the request proceed normally; it will be processed in a second layout pass
+            // if necessary
+            return true;
+        } else {
+            // Don't let the request proceed during the second layout pass.
+            // It will post to the next frame instead.
+            return false;
         }
     }
 ```
 
-所以整个流程就没啥可说的了。
+
+
+但是，还需要注意的是
+
+```
+   if (mMeasureCache != null) mMeasureCache.clear();
+```
 
 
 # invalidate
