@@ -80,8 +80,11 @@ ViewGroup 中 有个 mFirstTouchTarget 指向上一个接受事件处理的View
 
 > 对于ViewGroup，如果事件是 ACTION_DOWN 的时候，会重置状态
 
-当没有找到任何childView 响应actionDown的时候，自己的 onTouchEvent进行处理
+当没有找到任何childView 响应actionDown的时候，自己的 onTouchEvent进行处理;
 
+## 关于 ActionCancel
+
+当另一个点击事件过来并被别的处理是，收到 action_cancle
 ##  ViewGroup 中，子View 能够处理事件的要求
 
  1. View 是 visible 的
