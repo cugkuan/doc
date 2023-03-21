@@ -1,13 +1,27 @@
 
 # 概述
-Lifecycle 生命周期感知组件基本上是项目中必用的功能；在Google 没有推出该组件时，需要自己去封装。
+Lifecycle 生命周期感知组件基本上是项目中必用的功能;
 
 
-在使用中，涉及到二个类
+涉及到三个主要的类
 
-Lifecycle 和  LifecycleObserver
+Lifecycle ， LifecycleObserver,LifecyOwner
 
-对于 LifecycleObserver 常用的是继承它的 LifecycleEventObserver 
+
+## LifecycleOvserver 
+
+对于 这个  Interface ,它的注解如下：
+
+/**
+ * Marks a class as a LifecycleObserver. Don't use this interface directly. Instead implement either
+ * {@link DefaultLifecycleObserver} or {@link LifecycleEventObserver} to be notified about
+ * lifecycle events.
+ *
+ * @see Lifecycle Lifecycle - for samples and usage patterns.
+ */
+
+
+于是常用的 LifecycleEventObserver 用法如下：
 
 ```
    lifecycle.addObserver(object :LifecycleEventObserver{
@@ -25,7 +39,28 @@ Lifecycle 和  LifecycleObserver
             }
         })
 ```
->通过注解的方式，官方已经标识为过时。
+
+##  LifecyOwner 
+
+这个 Interface 更像一种规范，它的源码非常的简单：
+```
+public interface LifecycleOwner {
+    /**
+     * Returns the Lifecycle of the provider.
+     *
+     * @return The lifecycle of the provider.
+     */
+    @NonNull
+    Lifecycle getLifecycle();
+}
+```
+
+其中，ComponentActivity。Fragment 都实现了其接口。
+
+
+## Lifecycle 
+
+Lifecycle 有一个子类 LifecycleRegistry;
 
 
 下面是一个简单的类图，似乎有点像桥接设计模式
@@ -46,26 +81,12 @@ ComponentActivity 由 ReportFragment 处理
 
 
 
-# 代码阅读
+# 关键代码阅读
 
 Lifecycle 有一个子类 LifecycleRegistry。它负责处理具体的业务。
 
-- LifecycleOwner
 
-```
-public interface LifecycleOwner {
-    /**
-     * Returns the Lifecycle of the provider.
-     *
-     * @return The lifecycle of the provider.
-     */
-    @NonNull
-    Lifecycle getLifecycle();
-}
-
-```
-
-ComponentActivity， Fragment 实现了该接口。getLifecycle 返回的是 LifecycleRegistry；
+ComponentActivity， Fragment 的Lifecycle就是 LifecycleRegistry；
 
 LifecycleRegistry 中有一个重要的 方法就是 handleLifecycleEvent。负责将对应的事件分发给观察者。
 

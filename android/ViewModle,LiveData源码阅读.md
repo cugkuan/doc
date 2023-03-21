@@ -4,7 +4,10 @@ LiveData 的概念非常重要，是MVVM 架构的基础，在MVVM 基础上衍�
 
 ## 几个重要的类
 
+
 ViewModelStoreOwner ， ViewModelStore，LiveData
+
+其结构类似以 Lifecycle；
 
 ## 带着问题看源码
 
@@ -106,7 +109,10 @@ ViewModelStore 存储 ViewModle 的key是 String，需要把 class 按照一定�
 
 谷歌的工程师，将LiveData 和 ViewModel拆开成二个库，
 
-LiveData 部分就三个类,LiveData,MutableLiveData,Observer ;其中 MutableLiveData 不用看，Observer 就是一个简单的接口，也不用看。重点就看LiveData
+LiveData 部分就三个类,LiveData,MutableLiveData,Observer ;其中 MutableLiveData 不用看，Observer 就是一个简单的接口，也不用看。重点就看LiveData;
+
+
+LiveData 重点是 LifecycleBoundObserver 这个就是一个生命周期的观察者，剩余的事情就不多说了。简单
 
 
 ## 代码分析
