@@ -80,3 +80,7 @@ android.os.MessageQueue.nativePollOnce(Native Method)
 ```
     QbSdk.setCoreMinVersion(46141)
 ```
+
+# Android 13  TextView  的  includeFontPadding  不生效
+
+这个真是申请，target Sdk  = 33 就出现，32 确没有问题，在小米手机上出现了该问题。
