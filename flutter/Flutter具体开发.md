@@ -5,5 +5,14 @@
 
 # 问题记录
 
+- MateriaApp 设置了路由，如果没有设置 initialRoute ,那么界面会闪烁。
 
-TextFiled  的 keyboardType = TextInput.visiblePassword 会引发界面重绘，抖动，但不知道为什么。
+
+# 状态管理
+
+ ## InheritedWidget
+ 这个是官方的，很多状态共享的库都是基于此。
+
+
+
+#
