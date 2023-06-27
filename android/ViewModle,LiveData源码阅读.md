@@ -1,6 +1,6 @@
 # 概述
 
-LiveData 的概念非常重要，是MVVM 架构的基础，在MVVM 基础上衍生的 MVI 也同样需要。要弄清楚这个笔记的内容，需要有[Lifecycle](./Lifecycle%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.md)的相关知识点。
+LiveData 的概念非常重要，是MVVM 架构的基础。要弄清楚这个笔记的内容，需要有[Lifecycle](./Lifecycle%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB.md)的相关知识点。
 
 ## 几个重要的类
 
