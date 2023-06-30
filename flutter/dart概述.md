@@ -200,6 +200,36 @@ void main() {
   var p = Point(2, 3);
   print(p.distanceFromOrigin);
 }
-```
+``` 
 
 特别有意思
+
+# mixin
+
+字面意思是混合；这种不能看成是多继承，它的作用是代码复用。
+
+```
+mixin  A{
+  int f = 1;
+  void f(){
+    print(f);
+  }
+}
+```
+
+A 不能被实例化。
+
+```
+class Test with A{
+
+}
+```
+
+下面的代码这样做是合法的
+
+```
+Test t = Test();
+A a = Test();
+/// 下面的代码无法被编译
+A a1 = A();
+```
