@@ -10,17 +10,17 @@ View
 - dispatchTouchEvent
 
 true 表示事件被消费处理
-- onTouchEvent
 
+- onTouchEvent
 true 表示事件被消费处理
 
 
 ViewGroup 比较复杂，多了一个  onInterceptTouchEvent
 
 - dispatchTouchEvent
- - onInterceptTouchEvent
+- onInterceptTouchEvent
 true -> 表示处理该事件，只有 true才有接下来的 onTounchEvent
- - onTouchEvent
+- onTouchEvent
 
 
 其工作流程的伪代码如下,这就包含了事件分发的所有秘密了。
