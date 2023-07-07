@@ -78,7 +78,34 @@ Handler 中有这样的一个属性
     }
 ```
 
+异步消息是干什么的？当开启同步屏障后，异步消息优先得到执行
+
 ## 如何开启同步屏障
+
+同步屏障并没有对开发者开放，能看到同步屏障开启的代码是在 ViewRootImpl中。
+
+```java
+    @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.R, trackingBug = 170729553)
+    void scheduleTraversals() {
+        if (!mTraversalScheduled) {
+            mTraversalScheduled = true;
+            mTraversalBarrier = mHandler.getLooper().getQueue().postSyncBarrier();
+            mChoreographer.postCallback(
+                    Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, null);
+            notifyRendererOfFramePending();
+            pokeDrawLockIfNeeded();
+        }
+    }
+
+    void unscheduleTraversals() {
+        if (mTraversalScheduled) {
+            mTraversalScheduled = false;
+            mHandler.getLooper().getQueue().removeSyncBarrier(mTraversalBarrier);
+            mChoreographer.removeCallbacks(
+                    Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, null);
+        }
+    }
+```
 
 ```java
 //开启同步屏障
@@ -88,10 +115,6 @@ mHandler.getLooper().getQueue().removeSyncBarrier(mTraversalBarrier);
 ```
 
 请注意，如果不关闭同步屏障，同步消息永远得不到执行
-
-哪里使用了同步屏障？
-
-View的绘制等。
 
 # IdleHandler
 
