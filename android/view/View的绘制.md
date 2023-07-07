@@ -26,6 +26,18 @@ ViewRootImp 管理着 DecorView
 
 详见[关于ViewRootImp](./%E5%85%B3%E4%BA%8EViewRootImp.md)
 
+# View 内部绘制过程
+
+View  的 draw中交代的很明确
+
+1. 绘制背景 drawBackground
+2. 绘制内容 onDraw
+3. 绘制 children  dispatchDraw
+4. drawAutofillHighlight
+5. 绘制前景 onDrawForeground
+6. drawDefaultFocusHighlight
+7. debugDrawFocus
+
 # View 的 invalidate 和 requestLayout
 
 
@@ -98,27 +110,6 @@ ViewRootImp 管理着 DecorView
 
 我们发现，invalidate 和 requestLayout ,最终都会 调用 ViewRootImp 的 scheduleTraversals 方法，不同的是，invalided 会标识 一个 dirty 的区域，requestLayout ,会将View 添加进入 mLayoutRequesters 中。
 
-
-
-
-
-
-# Window，WindowManger,WindowMangerGlobal
-
-
-window的最终添加 管理 是通过 WindowMangerService
-
-
-
-
-# Activity 和 Window
-
-
-这么理解，Actiivty 只是封装了 window 的相关操作。window 才是独立的一块 绘制单元(openGL,Surface....)
-
-
-
-ActivityThread  这个顾名思义，就是一个线程，Android 的底层是 liunx ,liunx 是一个多用户的操作系统，每一个应用就是一个 用户；这个类中，我们能看到熟悉的 main方法。这个就是APP运行的入口函数。
 
 
 
