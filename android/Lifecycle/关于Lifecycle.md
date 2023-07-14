@@ -54,7 +54,7 @@ public abstract class Lifecycle {
 
 - LifecycleRegistry 是 Lifecycle 的具体实现，所有的业务逻辑处理都是在  LifecycleRegistry 进行处理的
   
-
+> LifecycleRegistry核心代码就是方法sync
 
 - androidx.frgment.Fragment 和 FragmentActivity 直接在各自的生命周期回调中处理（LifecycleRegistry.handleLifecycleEvent）;但是 ComponentActivity 确使用了ReportFragment作为什么周期的观察者.
 
@@ -67,16 +67,33 @@ public abstract class Lifecycle {
 
 ### 粘性
 
-> 在 onResume 中添加 LifecycleObserver 那么 它依然可以收到 onCreateEvent ,OnStartEvent,OnResumeEvent;这个就是粘性。
+ 在 onResume 中添加 LifecycleObserver 那么 它依然可以收到 onCreateEvent ,OnStartEvent,OnResumeEvent;这个就是粘性。
 
 
 ### 回流
 
-1.我们在Activity的onResume里面注册了一个观察者A
-2.在A的观察者的onStart的生命周期里面移出了A自己
-3.然后再A的观察者的onStart的生命周期里面加入了一个新的观察者B
+简单的说，就是新加入的 observer 状态不大于前面的；因此引入了 mParentStates.
 
-我们期望 B的 观察者的回调只能到 onStartEvent;但实际上的回调是：onCreate``onStart``onResume，这就会出现一个逻辑性的错误，后注册的观察者的生命周期比之前注册的回调超前了。所以有了mParentStates后，mParentStates会保存A直到A的生命周期执行结束，所以这时候，B就只会执行onCreate和onStart的回调。这个就是我们说的重入问题。
+```
+fun oResume(){
+lifecycle.addObserver(object :LifecycleEventObserver{
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == Lifecycle.Event.ON_START){
+                    lifecycle.addObserver(object :LifecycleEventObserver{
+                        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                        }
+                    })
+                }
+            }
+
+}
+
+```
+
+- 在 OnResume中添加 A
+- 在 A 的 event的 start 中添加 新的观察着B
+
+问题就来了，此时 A的分发状态才到 statr 但是新加入的B 此时的状态应该是 resume ；为了让A的状态不大于A,引入了 mParentState 去检验状态。
 
 
 **其实就是后添加的观察者执行的顺序应该在前面执行之后，比如先添加了A，再添加了B,那么A的onStatr应该先于B的onStartt的Event顺序**

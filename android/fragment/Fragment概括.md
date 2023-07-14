@@ -15,7 +15,7 @@ Frgament 本身很简单，复杂的是 FragmentTransaction 涉及到的一系�
 
 - FragmentTransaction
 
-只是作为一个行为记录。一次操作，被抽象为一个
+只是作为一个行为记录。一次操作，被抽象为一个FragmentTransaction.Op
 
 - BackStackRecord  
 
@@ -101,6 +101,7 @@ FragmentController 很简单，提供 FragmentManger,负责将 Activity 生命�
         mFragmentLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
     }
 ```
+注意，这里的 mFragments是 FragmentController 
 
 # 总结
 

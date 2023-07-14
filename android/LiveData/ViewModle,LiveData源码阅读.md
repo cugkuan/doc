@@ -3,6 +3,25 @@
 LiveData 的概念非常重要，是MVVM 架构的基础。要弄清楚这个笔记的内容，需要有[Lifecycle](../Lifecycle/%E5%85%B3%E4%BA%8ELifecycle.md)的相关知识点。
 
 
+# ViewModelStoreOwner 
+
+
+这个类似于 LifecycleOwner 是一种规范，Fragment和AppCompatActivity 等实现了该接口
+
+```
+public interface ViewModelStoreOwner {
+    /**
+     * Returns owned {@link ViewModelStore}
+     *
+     * @return a {@code ViewModelStore}
+     */
+    @NonNull
+    ViewModelStore getViewModelStore();
+}
+```
+重点看 ViewModelStore
+
+
 #  ViewModelStore和 ViewModel
 
 ViewModleStore的源码很简单：
@@ -53,9 +72,20 @@ public class ViewModelStore {
             }
         });
 ```
+作为LiveData宿主的**ViewModel的源码更简单，无非在使用的时候，注意onClear方法做好垃圾回收**
 
-**ViewModel的源码更简单，无非在使用的时候，注意onClear方法做好垃圾回收**
+```mermaid
+classDiagram
 
+class ViewModelStoreOwner 
+class  ViewModel
+class LiveData
+
+ViewModelStoreOwner "1" --> "*" ViewModel 
+ViewModel "1" --> "*" LiveData
+
+
+```
 
 # LiveData
 
@@ -68,7 +98,7 @@ public class ViewModelStore {
 - LiveData 数据是具有粘性的
 
 
-## LiveData 是如何感知生命周期的变化
+## LiveData 是如何感知生命周期的变化 - LifecycleBoundObserver
 
 
 看下 LiveData 的 observer方法：
@@ -96,7 +126,9 @@ public class ViewModelStore {
 逻辑很明白了，LifecycleBoundObserver 实现了 LifecycleEventObserver 然后通过  owner.getLifecycle().addObserver(wrapper) 实现了对生命周期的观察。
 
 
-**补充** 当 收到 OnDestroy 事件的时候，会自动移除观察者（LifecycleBoundObserver）。
+**补充** 
+
+当 收到 OnDestroy 事件的时候，会自动移除观察者（LifecycleBoundObserver）。
 
 
 ## LiveData 数据分发细节粘性问题
