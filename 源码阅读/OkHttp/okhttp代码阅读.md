@@ -3,7 +3,7 @@ OkHttp的架构上是非常简单的。
 
 **细节问题**
 - 底层的通信使用的是 socket 通信。
-- 缓存三个体系，一个是连接池（TCP 建立连接是耗时的），二是根据HTPP的缓存规范（在CacheInterceptor中；最后是用户设置的Cache.
+- 缓存三个体系，一个是连接池（TCP 建立连接是耗时的），二是根据HTPP的缓存规范（在CacheInterceptor中；最后是用户设置的Cache(可以简单的理解为一个 key-value结构).
 
 
 ## 架构问题

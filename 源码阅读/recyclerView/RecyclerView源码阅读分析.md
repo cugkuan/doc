@@ -111,10 +111,17 @@ LayoutManger 在布局前会先  detachAndScrapAttachedViews ;一般的我不贴
 > https://blog.csdn.net/qq_23012315/article/details/50807224
 
 
-其中重要的就是确定锚点，确定锚点后，根据锚点就行布局。
+其中重要的就是确定锚点，确定锚点后,后面的布局是根据锚点来的
 
-![image](RecyclerView源码阅读分析.png)
 
+![image](a.png)
+
+
+大体过程：
+
+- 确定锚点
+-  detachAndScrapAttachedViews   
+-  根据锚点布局（fill ,layoutChunk  ）;layoutChunk中可以看到熟悉的addView,measureChild，layout等代码
 
 
 
