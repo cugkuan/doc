@@ -4,7 +4,7 @@
 如果你借用 Android 的那一套View体系，你觉得Flutter 很奇怪。
 
 
-Flutter 就是一个纯粹的UI框架。从这里理解就足够了；
+Flutter 就是一个纯粹的UI框架，理解到这个程度就够了。
 
 
 # Flutter 的布局
@@ -22,7 +22,7 @@ Flutter 就是一个纯粹的UI框架。从这里理解就足够了；
 
 下面的代码是绘制一个圆
 
-```
+``` dart
 class CustomView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class CustomView extends StatelessWidget {
 class MyCircle extends CustomPainter{
   @override
   void paint(Canvas canvas, Size size) {
-     var canvas = context.canvas;
+    var canvas = context.canvas;
     var paint = Paint()
       ..isAntiAlias = true
       ..style = PaintingStyle.fill

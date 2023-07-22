@@ -18,7 +18,7 @@ Flutter 是一个单页面应用，如果采用单引擎的话，当然可以是
 
 Widget 这是一个配置描述。真正的渲染对象是 RenderObject;
 
-请注意：**Element只是一个配置描述文件**
+请注意：**Widget只是Element的一个配置描述文件，告诉Element怎么去渲染**
 
 > 配置文件 Widget 生成了 Element，而后创建 RenderObject 关联到 Element 的内部 renderObject 对象上，最后Flutter 通过 RenderObject 数据来布局和绘制。
 
