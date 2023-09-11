@@ -124,3 +124,26 @@ CAS  就是乐观锁；java9才开放给用户使用。但这种有逻辑漏洞�
 - Thread  中 有一个 ThreadLocal.ThreadLocalMap threadLocals; 的属性
 - ThreadLocal.ThreadLocalMap  就不多说了，map 结构啊
   
+
+# synchronized 关键字再理解
+
+在Java里面， 最基本的互斥同步手段就是synchronized关键字， 这是一种块结构（Block
+Structured） 的同步语法。 synchronized关键字经过Javac编译之后， 会在同步块的前后分别形成
+monitorenter和monitorexit这两个字节码指令。 这两个字节码指令都需要一个reference类型的参数来指明
+要锁定和解锁的对象。 如果Java源码中的synchronized明确指定了对象参数， 那就以这个对象的引用作
+为reference； 如果没有明确指定， 那将根据synchronized修饰的方法类型（如实例方法或类方法） ， 来
+决定是取代码所在的对象实例还是取类型对应的Class对象来作为线程要持有的锁。
+
+在执行monitorenter指令时， 首先要去尝试获取对象的锁。 如果
+这个对象没被锁定， 或者当前线程已经持有了那个对象的锁， 就把锁的计数器的值增加一， 而在执行
+monitorexit指令时会将锁计数器的值减一。 一旦计数器的值为零， 锁随即就被释放了。 如果获取对象
+锁失败， 那当前线程就应当被阻塞等待， 直到请求锁定的对象被持有它的线程释放为止。
+
+
+## synchronized 的局限性
+
+- 被synchronized修饰的同步块在持有锁的线程执行完毕并释放锁之前， 会无条件地阻塞后面其他
+线程的进入。 这意味着无法像处理某些数据库中的锁那样， 强制已获取锁的线程释放锁； 也无法强制
+正在等待锁的线程中断等待或超时退出
+
+- synchronized 是一个重量级的操作。在Java 6之前有严重的性能问题。但是经过Java6优化后。已经没有多少性能问题了。
