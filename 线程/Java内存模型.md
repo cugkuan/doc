@@ -121,8 +121,12 @@ CAS  就是乐观锁；java9才开放给用户使用。但这种有逻辑漏洞�
 
 作用是在同一个线程内方便对象的共享。
 
-- Thread  中 有一个 ThreadLocal.ThreadLocalMap threadLocals; 的属性
-- ThreadLocal.ThreadLocalMap  就不多说了，map 结构啊
+- Thread  中 有一个 ThreadLocal.ThreadLocalMap threadLocals 的属性
+- ThreadLocal.ThreadLocalMap  就不多说了，map 结构
+
+- 也就是说ThreadLocal的get方法，实际上就是当前线程的 threadLocals。这也是ThreadLocal 使用很方便的原因，跨代码模块的共享同一个线程的对象。
+
+
   
 
 # synchronized 关键字再理解

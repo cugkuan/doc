@@ -2,16 +2,37 @@
 # 概述
 
 
-## LifecycleOwner 
+```mermaid
+classDiagram
+
+class LifecycleOwner {
+<<interface>>
+}
+class Lifecycle
+class LifecycleRegistry
+
+class LifecycleObserver{
+    <<interface>>
+}
+
+LifecycleOwner *-- Lifecycle
+LifecycleOwner <|.. ComponentActivity
+LifecycleOwner <|.. Fragment
+Lifecycle <|-- LifecycleRegistry
+Lifecycle *-- LifecycleObserver
+
 
 ```
-/**
- * A class that has an Android lifecycle. These events can be used by custom components to
- * handle lifecycle changes without implementing any code inside the Activity or the Fragment.
- *
- * @see Lifecycle
- * @see ViewTreeLifecycleOwner
- */
+
+请注意，Lifecycle 的子类只有 LifecycleRegistry
+
+- 对开发来说，开发者通过 LifecycleObserver 来收到生命周期变化通知
+
+
+
+# LifecycleOwner 
+
+```
 @SuppressWarnings({"WeakerAccess", "unused"})
 public interface LifecycleOwner {
     /**
@@ -24,17 +45,9 @@ public interface LifecycleOwner {
 }
 ```
 
-这就是一个规范而已。该组件是否有Lifecycle 的规范
-
-
-
-核心的 就是 Lifecycle; Lifecycle 的子类只有一个实现就是 LifecycleRegistry 关于  LifecycleRegistry 的代码不建议去看，因为没有必要。有两个主要的疑点
-
-- 为什么会有 Event 和State
-- “重入”的概念
+这就是一个规范而已。该组件是否支持生命周期。
 
 # Lifecycle
-
 Lifecycle关键核心的代码如下：
 
 ```
@@ -52,18 +65,23 @@ public abstract class Lifecycle {
 ```
 
 
-- LifecycleRegistry 是 Lifecycle 的具体实现，所有的业务逻辑处理都是在  LifecycleRegistry 进行处理的
+- LifecycleRegistry 是 Lifecycle 的具体实现而且是唯一的子类，所有的业务逻辑处理都是在  LifecycleRegistry 进行处理的
   
 > LifecycleRegistry核心代码就是方法sync
 
 - androidx.frgment.Fragment 和 FragmentActivity 直接在各自的生命周期回调中处理（LifecycleRegistry.handleLifecycleEvent）;但是 ComponentActivity 确使用了ReportFragment作为什么周期的观察者.
 
-**关于ReportFragment**
+# 如何观察生命周期？
 
-在 api>= 29 的时候通过在 Aplication 中注入Application.ActivityLifecycleCallbacks ；<29则是  通过 ReportFragment 
+LifecycleRegistry 只具备生命周期的分发处理能力，那么是谁把生命周期报告给他的呢？
 
 
-## Lifecycle 设计的难点
+在 ComponentActivty中，通过ReprotFragment 去做的。
+> 如果 sdk_Int >= 29 通过注册Application.ActivityLifecycleCallbacks来实现的，在29 之前通过Fragment的生命周期回调去处理的。
+
+
+
+# Lifecycle 设计的难点
 
 ### 粘性
 
@@ -109,3 +127,8 @@ mParentStates就出现用处了，mParentStates会在观察者生命周期回调
 
 
 ![image](./file/e363bc345b7b41c5a201c6c4877bf83e~tplv-k3u1fbpfcp-zoom-in-crop-mark_4536_0_0_0.webp)
+
+
+### 其它的细节
+
+另外，在 Activity 的 onSaveInstanceState 的回调中， LifecycleRegistry将其生命周期置为 Create 状态，但是此时并不通知观察者。为什么呢？这个得从Activity 的生命周期去理解。
