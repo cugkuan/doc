@@ -105,7 +105,7 @@ public final class BridgeInterceptor implements Interceptor{
 
 上面五个拦截器串联了整个工作过程。现在看下面的架构图就显得清晰了、
 
-![image](file/v2-df31eeefb44cc1f36f6a36db5deeb0a5_1440w.webp)
+![image](assets/v2-df31eeefb44cc1f36f6a36db5deeb0a5_1440w.webp)
 
 
 # 连接池复用和Socket 通信已经DNS解析等细节问题
