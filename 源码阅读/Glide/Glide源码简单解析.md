@@ -1,17 +1,20 @@
 # 概述
 
 
-- Glide 分为二个大模块分别是 管理Request部分和Request部分
+- 从顶层结构看，Glide 分为二个大模块分别是： 管理Request部分和Request部分
+- 缓存分布在各个模块中
 
 
 
 ## 整体架构分析
-Glide 的结构本身并不复杂，为了性能的最优化，每一个层设计的复杂。比如缓存体系，从大的方面看时二层，但是每一层又进行了分层，这个设计由于图片的特殊性造成的。另外为了能自动管理各种图片的请求和绑定生命周期，中间添加了很多层去做。
-
 
 GlideBuilder 是一个建造者模式的应用，并不需要太多的关心。
 
-抛去细节，比如RequestBuilder 这些无关紧要的，下面Glide 顶层的架构设计图。关于缓存体系，encode,decode等细节，在 SingleRequest中。
+下面是最顶层的架构设计，主要围绕着Requset展开
+
+- 每一次的加载图片抽象成一条Request
+- 如何管理Request
+- 如何感知生命周期（Activity，Fragment,View），进而自动管理这些Requset
 
 ```mermaid
 classDiagram
@@ -55,18 +58,14 @@ classDiagram
 class Engine {
   +load()
 }
-
 class Jobs
 class EngineJob{
   +start()
 }
-
 class DecodeJob
-
 class DataFetcher{
   <<interface>>
 }
-
 class OkHttpStreamFetcher
 class HttpUrlFetcher
 class FileFetcher
@@ -90,10 +89,6 @@ ResourceDecoder <-- BitmapImageDecoderResourceDecoder
 ResourceDecoder <-- FileDecoder
 ResourceDecoder <-- VideoDecoder
 ResourceDecoder <-- GifFrameResourceDecoder
-
-
-
-
 
 Engine *-- Jobs
 Jobs  "1" *-- "*" EngineJob
