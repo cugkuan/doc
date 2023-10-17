@@ -83,7 +83,7 @@ class GifFrameResourceDecoder
 DataFetcher <-- OkHttpStreamFetcher
 DataFetcher <-- HttpUrlFetcher
 DataFetcher <-- FileFetcher
-DataFetcher <--  LocalUriFetcher
+DataFetcher <-- LocalUriFetcher
 
 ResourceDecoder <-- BitmapImageDecoderResourceDecoder
 ResourceDecoder <-- FileDecoder
@@ -97,7 +97,7 @@ DecodeJob *-- DataFetcher
 DecodeJob -- LoadPath
 LoadPath -- DecodePath
 DecodePath *-- "*" ResourceDecoder
-DecodePath - DataRewinder
+DecodePath -- DataRewinder
 
 ```
 - Jobs 类似一个容器作用，内部使用 HashMap 管理EngineJob 
