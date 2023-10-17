@@ -27,10 +27,13 @@ class Lifecycle{
 class  ActivityFragmentLifecycle
 class SupportRequestManagerFragment
 class RequestManager
+class RequestManagerRetriever
 
 Lifecycle <|-- ActivityFragmentLifecycle
 SupportRequestManagerFragment *-- ActivityFragmentLifecycle
 RequestManager *-- Lifecycle
+SupportRequestManagerFragment *-- RequestManager
+RequestManagerRetriever *-- SupportRequestManagerFragment
 
 
 
@@ -43,3 +46,20 @@ ActivityFragmentLifecycle ->> RequestManger:onStart ->resumeRequests
 
 
 ```
+# RequestManagerRetriever 简单的分析
+
+Glide.with(fragment) 返回的是 RequestManagerRetriever，而RequestManagerRetriever是一个单例。
+
+
+RequestManagerRetriever 内部有一个成员
+```java 
+final Map<android.app.FragmentManager, RequestManagerFragment> pendingRequestManagerFragments =
+      new HashMap<>();
+
+```
+
+Glide.with(fragment),其关键点是：
+
+- 一个 fragment 中有一个 SupportRequstMangerFragment,和一个RequestManger.SupportRequstMangerFragment持有和一个RequestManger
+
+- RequestManger 观察 SupportRequstMangerFragment 的生命周期回调，进而管理Request。
