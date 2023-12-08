@@ -49,6 +49,16 @@ struct HelloComponent {
 # 状态管理
 
 
+
+![Alt text](./assets/image.png)
+
+**UI渲染，指将build方法内的UI描述和@Builder装饰的方法内的UI描述映射到界面。也就是，这个只在build中生效。其它地方没有效果。**
+
+
+其次，子组件的属性由父传入，父的变化并不能被子观察到，需要通过其它的手段，真是坑爹。这个状态管理，需要大量的经验和代码去实践。
+
+
+
 # 关于组件的生命周期
 
 # 自定义布局和控件
@@ -57,4 +67,33 @@ struct HelloComponent {
 ArkUI 提供了自定义的布局。还挺难找的。
 https://developer.harmonyos.com/cn/docs/documentation/doc-references-V3/arkts-custom-component-lifecycle-0000001482395076-V3
 
-那开发就没啥难度了。
+
+请注意，响应式的编程和命令式的编程思路是不一样的。不要以命令式的开发思想去写响应式的编码。
+
+
+# 一些组件的使用问题
+
+- Grid 不能自适应高度，真坑
+
+- Class 的成员变量竟然不能在 Build 中使用，一定要 staice
+- Scroll 功能本身很强大，和List 嵌套滚动的时候，不用考虑滑动冲突，但是嵌套的时候发现卡顿感觉;这里面的门道还是挺多的。（卡顿感，发现是没有指定list 和容器的高度，如果指定了高度就么问题了）
+
+
+## List 的坑逼
+
+它的坑更多的来自于
+
+
+## Row 和 Flex
+
+
+Row 的 子控件并不能根据剩余的宽度进自动的填充。Flew 可以，不过 Flew 渲染存在二次布局过程，对性能要求比较高，用 Row，Column 替代。
+
+
+## RelativeContainer
+
+使用这个组件的，子组件必须指定一个ID，不然就会崩溃。
+
+## 关于不透明度
+
+如果我使用一个透明的颜色。Android中可以这样表示：0x00000000，但是在Harmony中，会渲染成黑色，只能使用 Color.Transparent 表示成完全透明；但是 0x80000000 确可以用于表示 50% 黑色不透明度。

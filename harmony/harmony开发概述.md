@@ -26,6 +26,31 @@
 - 支持多种上架方式（分阶段灰度发布）
 
 
+# harmony 的多 HAP 
+
+**我能共享Feature中的代码吗？**
+
+不可以！
+Feature 是什么？，既然能独立的运行，安装。那么在Android 的理解中，这个类似于一个插件APP。那么Feature就是非常独立的应用。不能进行代码的共享和资源共享。
+
+
+如果要共享代码和资源，使用HAR 和HSP。
+
+
+在Android 中，对于大型的项目，我们常常使用组件化和插件化的开发方式，那么Feature满足的是插件化的开发方式，但是组件化呢？
+
+
+
+
+
+
 # 总结
 
 从华为给出的资料看，鸿蒙仍然处于发展阶段，看趋势，其开发套件应该还会有变更。从构建工具的变更，编程语言的变更等。
+
+
+# 崩溃记录
+
+字体设置。按照官方的要求开发一样的崩溃
+
+https://developer.harmonyos.com/cn/docs/documentation/doc-references-V3/js-apis-font-0000001615346609-V3?catalogVersion=V3
