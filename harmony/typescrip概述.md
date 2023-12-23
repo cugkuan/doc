@@ -116,6 +116,8 @@ my = 1
 
 - readOnly 
 
+- get 和 set 
+
 # Module 和 namespace
 
 为什么有模块这个概念。下面这个文章其实写的很好的
