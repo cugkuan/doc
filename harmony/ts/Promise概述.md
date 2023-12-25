@@ -4,8 +4,43 @@
 
 Promise 是什么？**Promise 对象表示异步操作最终的完成（或失败）以及其结果值。**
 
+请注意，异步的代码是在 new Promise的回调之前的，then 和 catch 的代码，是同步代码，下面的例子，说明了异步代码，同步代码分别运行在哪里
 
-我们以一个例子。解释 Promise的作用
+```js
+
+       let resolve = function (result:number){
+          // 这里是同步代码
+          console.log('lmk','输出结果：'+result)
+        }
+        let reject = function(error:number){
+          // 这里是同步代码
+        }
+        new  Promise<number>(function (reslove,error) {
+          // 这是是异步代码
+          reslove(1)
+        }).then(resolve,reject)
+
+```
+
+第二个例子
+```js
+
+         new  Promise<number>(function (reslove, error) {
+            // 这是是异步代码
+            reslove(1)
+          }).then(() => {
+            //同步代码
+            return 0
+          }).then(() => {
+            return new Promise(function (reslove, error) {
+              // 异步代码
+              reslove(3)
+            })
+          })
+```
+
+
+如果没有Promise，那么我们以回调的方式去处理；下面的一个例子解释 Promise的方便性
 
 
 下面的代码要完成的功能如下：
