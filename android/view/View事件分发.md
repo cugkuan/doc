@@ -59,10 +59,8 @@ if(!isIntercept){
 
 对于 View ，dispatchTouchEvent 负责分发事件，最终 分发给 OnTouchEvent去处理事件。
 
-
-
 对于ViewGroup ，情况比较复杂点。
- -   dispatchTouchEvent 负责分发事件，首先会调用 onInterceptTouch 询问是否拦截事件，只有 返回true 表示拦截处理。拦截处理后，交给自己的onTouchEvent处理。否则进行分发。
+- dispatchTouchEvent 负责分发事件，首先会调用 onInterceptTouch 询问是否拦截事件，只有 返回true 表示拦截处理。拦截处理后，交给自己的onTouchEvent处理。否则进行分发。
  -  如果该 Event 不是 ACTION_DOWN ，有 mFirstTouchTarget ，直接分发给 mFirstTouchTarget，否则走正常的流程
  -  dispatchTouchEvent 根据 childView 的层次，进行分发，找符合条件的childView（动画结束，visible,Event 落在View的范围）；只有 childView 的 dispatchTouchEvent 返回 true ，表示分发结束； 如果所有的 子View 都没有处理，那么，就是自己的 onTouchEvent 处理，自己的也不处理，就抛给上层的View了。
 
