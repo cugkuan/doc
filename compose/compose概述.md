@@ -1,7 +1,6 @@
 # 概述
 
-Compose 是什么？构建原生Android界面新款工具包。狭义的理解，Compose用于取代xml,View,ViewGroup的一个界面构建工具包。
-
+Compose 是什么？一个声明性界面框架。
 ## 声明式UI
 
 声明式UI的核心思想是数据驱动界面。声明式UI的核心难点是状态管理。
