@@ -75,11 +75,11 @@ car.run()// 直接崩溃
 因为有Android的成熟经验，Harmony APP 直接照抄，对Android 的不足之处得以修复。下面是一张非常简陋的图：
 
 
-![App架构图](./assets/image%20copy.png)
+![App架构图](./assets/harmony_qzd_app%20copy.png)
 
 
 
-其中 基础模块 CS（自研） 是一个组件通信的框架，弥补自带通信能力孱弱的问题。
+其中 CS（自研） 是一个组件通信的框架，弥补自带通信能力孱弱的问题。
 
 
 
