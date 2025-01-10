@@ -1,4 +1,8 @@
 
+- 架构设计
+- 技术探讨
+- 实践
+
 # 整体的架构设计
 
 企知道 Harmony APP的整体架构如下：
@@ -6,19 +10,20 @@
 ![image](./assets/harmony_qzd_app%20copy.png)
 
 
--  单Ability 结构，属于单窗口应用；entry 是整个APP的入口
+-  单Ability 结构（单窗口应用）；entry 是整个APP的入口。
 - 采用典型的分层架构，单向依赖，上层依赖下层，同层之间禁止相互依赖。
 - CS 贯穿所有层，提供了同层，不同层之间的通信。
 - 业务层，采用微服务的架构模式。迭代，改动限制在一个业务模块，最小化测试，即使发生问题也不会扩散
   
 ## CS
 
-CS 是组件通信框架用于弥补Harmony组件通信问题，提供除了 页面跳转外所有的服务。CS设计思想是：“模块即服务”，借鉴了微服务的思想，每一个模块看做是可以向外提供的服务。通过Uri规范服务的唯一性。
+CS 是组件通信框架，弥补Harmony组件通信能力；提供除了 页面跳转外所有通信的服务。CS设计思想是：“模块即服务”，借鉴了微服务的思想，每一个模块看做是可以向外提供的服务。通过Uri规范服务的唯一性。
 
 <font color="red">由于编译插件支持原因，CS Harmony 还无法做到全自动化，需要手动注册服务</font>
 
 CS组件包含了CsService(数据通信)，CsViewBuilder（View共享），VirtualService（虚拟地址匹配）三大服务。
 
+View 复用共享例子
 ```ts
 @ViewPath('qzd:view//search/openView')
 export class OpenSearchView implements CsViewBuilder {
@@ -58,21 +63,24 @@ export class VirtualTabPage implements VirtualService {
 
 ### 关于页面跳转Navigation的简述
 
-<font color = "red">**CS框架 一开始提供页面的跳转，后来随着Navigation的成熟，CS删除了页面跳转相关内容。**</font>
+<font color = "red">**CS框架 一开始提供页面的跳转，随着Navigation的成熟，CS删除了页面跳转相关内容。**</font>
 
-项目一开始使用router ，后面切换到  Navigation 。关于 Navigation 的使用，查阅其具体的文档即可，这里要阐述二个内容。
+项目开始使用router ，后面切换到  Navigation 。关于 Navigation 的使用，查阅其具体的文档即可。下面是 二个典型场景情况下Navigation使用例子。
 
 #### 主界面Tab的设计
 
 - Tab 是服务端动态配置的。
 - 我们需要每一个Tab 有自己独立的生命周期。
- >比如”首页“的Tab 切换到 "我的"tab 时候，需要进行上报，停止各种动画，当切换到首页的时候，又需要同步数据，开始动画等。
+ >”首页“的Tab 切换到 "我的"tab 时候，需要进行上报，停止各种动画；当切换到首页的时候，又需要同步数据，开启动画等。
   
-这个设计，在Android 中采用 每一个Tab 都是一个Fragment，使用FragmentManger 去管理，每一个Fragment 都有独立的生命周期，FragmentManger.setMaxlifecycle 精确的控制生命周期。
 
-在Harmony 中如何设计？
+**Android 设计及其简单**
 
-因为只有 NavDestination 有生命周期，于是首页的容器为Navigation，使用独立的NavPathStack，每一个Tab使用 NavDestination 包裹。tab 的切换，转换NavPathStack 相关操作。
+对于这样的要求，在Android 中采用 每一个Tab 都是一个Fragment，使用FragmentManger 去管理，每一个Fragment 都有独立的生命周期，FragmentManger.setMaxlifecycle 精确的控制生命周期。
+
+**在Harmony 中如何设计？**
+
+因为只有 NavDestination 有明确的生命周期，于是首页的容器为Navigation，使用独立的NavPathStack，每一个Tab使用 NavDestination 包裹。tab 的切换，转换NavPathStack 相关操作。
 
 
 ## lib 层
@@ -94,16 +102,18 @@ vendor_warehouse:
 业务层，承当了各种业务，首页，综合搜索，h5容器等等。每个人维护各自的模块，将风险控制到模块内，有效防止风险扩散。
 
 
-# 开发
+# 技术探讨
 
 
 ## mvvm 模式
 
-ArkUi 是一个<font color= red>声明式的UI</font>。Android，iOS的原生开发属于命名式的。
+m-v-vm  
+
+ArkUi 是一个<font color= red>声明式的UI</font>。Android，iOS的原生开发属于命令式的。
 
 - 最大的区别是，命令式的UI，UI编写本身属于编程的一部分，属于代码模块（mvc,mvp）。
 
-- 声明式ui，UI是对数据的描述，所以数据成了关键。
+- 声明式ui，UI是对数据的描述。
 - 因为是数据的描述；数据变化才引起UI变化，数据变化抽象为数据状态管理
 
 mvvm 模式是Harmony 推荐的模式。
@@ -169,18 +179,18 @@ https://juejin.cn/post/6901200799242649607
 
 ### 首页设计
 背景介绍
-> 首页有点复杂，包含了二楼，悬停，搜索框，热词，钻石位app快捷入口，报告区域，ai,Banner，千人千面等功能。包含了二个主要的手势操作（进入/退出二楼，搜索框悬停）
+> 首页有点复杂，包含了二楼，悬停，搜索框，热词，钻石位app快捷入口，报告区域，ai,Banner，千企千面等功能。包含了二个主要的手势操作（进入/退出二楼，搜索框悬停）
 
 
 分层设计，分为三层：
 1. 第一层（HomePage）进入/退出二楼手势操作。这里需要注意对fling手势的处理。
 2. 第二层（HomePageContent），承接功能区域（搜索框，热词，钻石位app快捷入口，报告区域，ai,Banner,...）和悬停手势。
-3. 千人千面（HomeTabView）。
+3. 千企千面（HomeTabView）。
 
 <image src= "./assets/harmony_qzd_home.png" width = 150></image>
 
    
-通过这种分层设计，减少了开发的复杂度，便于协作，各自负责各自模块，互相不受任何影响。如二楼部分雷总去开发，千人千面由宏斌去做，手势操作和组合各个模块功能由我去做，各司其职，每个人的改动局限在自己的模块，问题不会扩散。如千人千面一直持续迭代中，测试只需要测试对应的功能，无需将整个首页全部测试（因为首页没有任何代码改动）。
+通过这种分层设计，减少了开发的复杂度，便于协作，各自负责各自模块，互相不受任何影响。如二楼部分雷总去开发，千企千面由宏斌去做，手势操作和组合各个模块功能由我去做，各司其职，每个人的改动局限在自己的模块，问题不会扩散。如千企千面一直持续迭代中，测试只需要测试对应的功能，无需将整个首页全部测试（因为首页没有任何代码改动）。
 
 
 下面是简单的一个类图，不考虑Model 层，仅仅考虑View层
@@ -264,41 +274,3 @@ export function ItemDecoration(index: number, item: ViewData<Object>) {
 
 - 将rect转为为  px 单位，得到 pxRect:number[]
 - 图片宽度/屏幕宽度 得到一个比值 scale,那么 图片裁剪区域为：finalRect = pxRect * scale
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
