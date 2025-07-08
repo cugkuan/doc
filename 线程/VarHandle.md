@@ -8,3 +8,5 @@ AtomicBoolean 内部也是 VaryHandle 实现的。
   
 
   
+
+Unsafe 不在暴露给使用者之后的一个替换品。

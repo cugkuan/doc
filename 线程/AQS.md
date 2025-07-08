@@ -1,3 +1,7 @@
+
+
+有了synchronized ，有了 Object 的 wait 和 notify ，为什么还需要 AQS? 因为 Object的wait 和 notify 并不能精确的控制线程。notify 是抢占式的；notifyAll 则是全部唤醒，参与抢占。AQS能更精细的控制线程（唤起/睡眠），一些更为复杂的功能如独占，共享需要依赖AQS来实现。
+
 # 概述
 
 AQS  AbstractQueuedSynchronizer  队列同步器。是构建锁的基础。
@@ -14,7 +18,7 @@ AQS 只是提供一个同步的框架。
 https://cloud.tencent.com/developer/article/1749371
 
 
-但是，请注意，上面的文章基于Java 20 以下的，Java 20  源码有变化。
+但是，请注意，Java 不同的版本，源码有差异。
 
 ## 关于Node 的源码
 
@@ -26,6 +30,25 @@ https://cloud.tencent.com/developer/article/1749371
         volatile int status;      // written by owner, atomic bit ops by others
 
    }
+```
+
+AQS 的简化代码
+```java 
+public abstract class AbstractQueuedSynchronizer
+    extends AbstractOwnableSynchronizer implements java.io.Serializable {
+    
+    // 核心同步状态
+    private volatile int state;
+    
+    protected final int getState();
+    protected final void setState(int newState);
+    protected final boolean compareAndSetState(int expect, int update);
+
+    // 自定义同步器要实现的两个核心方法：
+    protected boolean tryAcquire(int arg);     // 尝试获取
+    protected boolean tryRelease(int arg);     // 尝试释放
+}
+
 ```
 
 
@@ -53,6 +76,27 @@ https://cloud.tencent.com/developer/article/1749371
 对的锁的释放，是不存在所谓的公平和非公平的，直接取 头部节点，然后唤醒线程。
 
 ## 关于 Condition 
+Condition 是已经获取了线程执行权力，但是由于本身业务问题，需要挂起，让渡执行权力的操作。
+
+概览：
+
+1.当前线程持有锁
+
+2.调用 await()：
+
+- 释放锁（fullyRelease()）
+- 构造一个节点并加入 Condition 的等待队列
+- 当前线程挂起（LockSupport.park(this)）
+
+3. 其他线程 signal() 之后：
+
+- 把节点从 Condition 队列 转移到 AQS 同步队列
+
+- 唤醒线程（unpark），重新参与锁竞争
+
+4. 被唤醒后重新获取锁，await() 返回
+
+
 
 - 首先，Condition 的 await,signal,signalAll 对应着 Object 的 wait,notify,notifyAll；
 - Object的 notify 是随机唤起一个线程。 Condition 可以精确的唤起一个线程。
