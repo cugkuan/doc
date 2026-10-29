@@ -4,7 +4,7 @@
 
 - ShareFlow 和 Channel可以归为一类
 - StateFlow 每一次订阅 都会发送最新的值，而ShareFlow不会
-  > 所有，StateFlow常用于UI，ShareFlow可以最为EventBus 事件使用。
+  > StateFlow常用于UI，ShareFlow可以作为事件使用。
 
  
 
